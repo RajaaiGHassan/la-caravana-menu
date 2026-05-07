@@ -179,18 +179,14 @@
             width: 100%;
             height: auto;
             aspect-ratio: 4 / 3;
-            /* nice food-photo proportion */
             object-fit: cover;
             border-bottom: 1px solid var(--border);
             display: block;
             background: var(--accent-bg);
-            /* fallback while loading */
         }
 
-
-
-        /* --- Pop-up Review Button Styles --- */
-        .review-popup-btn {
+        /* --- Open in Google Maps Button --- */
+        .maps-btn {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -208,34 +204,24 @@
             margin: 25px auto;
             box-shadow: 0 4px 15px rgba(114, 62, 3, 0.3);
             width: fit-content;
+            text-decoration: none;
         }
 
-        .review-popup-btn:hover {
+        .maps-btn:hover {
             background-color: var(--primary-light);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(114, 62, 3, 0.4);
         }
 
-        .star-icon {
-            font-size: 1.3rem;
-        }
-
-        /* RTL Support */
-        html[dir="rtl"] .review-popup-btn {
+        html[dir="rtl"] .maps-btn {
             flex-direction: row-reverse;
         }
-
-
-
-
-
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(5px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -302,7 +288,6 @@
             header h1 {
                 font-size: 2.4rem;
             }
-
             .item-name {
                 font-size: 1.15rem;
             }
@@ -312,9 +297,9 @@
 
 <body>
 
-    <!-- Review Pop-up Button -->
-    <button id="review-popup-btn" class="review-popup-btn">
-        <span class="star-icon">⭐</span> Review Us Instantly
+    <!-- Open in Google Maps Button -->
+    <button id="maps-btn" class="maps-btn">
+        <span>📍</span> View on Google Maps
     </button>
 
     <div class="lang-switcher" id="lang-switcher">
@@ -331,7 +316,9 @@
 
     <div class="category-nav" id="cat-nav"></div>
 
-    <div class="menu-container" id="menu-list"></div>
+    <div class="menu-container" id="menu-list">
+        <p style="text-align:center; margin-top:40px; color: var(--text-gray);">Loading menu...</p>
+    </div>
 
     <div class="footer">
         <strong>La Caravana</strong><br>
@@ -341,6 +328,17 @@
     </div>
 
     <script>
+        // ========== CONFIGURATION – INSERT YOUR OWN LINKS HERE ==========
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2pe1iaRUuN5YCON66nGLYka8L5q5LY-n8s1G0QpmpKBR6yLTYNjPt5fPgcfOEZHOmmZoGywKDAliO/pub?gid=0&single=true&output=csv";   // e.g. https://docs.google.com/spreadsheets/d/e/.../pub?output=csv
+        const PLACE_ID = "YOUR_GOOGLE_PLACE_ID";         // e.g. 0x12a4a296437d3ed3:0x8cbf10ceb3cbcd49
+        // =================================================================
+
+        // Google Maps button
+        document.getElementById('maps-btn').addEventListener('click', () => {
+            const url = `https://www.google.com/maps/search/?api=1&query=Google&query_place_id=${PLACE_ID}`;
+            window.open(url, '_blank');
+        });
+
         // ========== TRANSLATIONS ==========
         const translations = {
             "subtitle": {
@@ -429,59 +427,98 @@
             }
         };
 
-        // ========== FULL MENU DATA (WITH IMAGES) ==========
-        const menuData = [
-            // ENTRANTES
-            {
-                id: 1, category: "entrantes", price: "7,9€",
-                image: "https://www.lacaravanabarcelona.com/img-trans/productos/24050/fotos/370-6737637d7de0c-la-caravana.png",  // ← Replace with real image URL
-                es: { name: "Humus", desc: "Crema de garbanzos cocidos y picados con salsa de sésamo.", mood: "Entrante frío" },
-                ca: { name: "Hummus", desc: "Crema de cigrons cuits i picats amb salsa de sèsam.", mood: "Entrant fred" },
-                en: { name: "Hummus", desc: "Pureed chickpeas with tahini sauce.", mood: "Cold starter" },
-                ar: { name: "حمص", desc: "هريسة حمص مطبوخة مع طحينة", mood: "مقبلات باردة" }
-            },
-            {
-                id: 2, category: "entrantes", price: "8,5€",
-                image: "https://s1.abcstatics.com/abc/www/multimedia/bienestar/2024/08/12/mutabal-emplatado-1-RL2q3guoNG3XBVG4zkAte8K-1200x840@diario_abc.jpg",
-                es: { name: "Mutabal", desc: "Crema de berenjenas asadas y picadas con salsa de sésamo.", mood: "Entrante frío" },
-                ca: { name: "Mutabal", desc: "Crema d'albergínies rostides i picades amb salsa de sèsam.", mood: "Entrant fred" },
-                en: { name: "Mutabal", desc: "Smoked aubergine puree with tahini.", mood: "Cold starter" },
-                ar: { name: "متبل", desc: "هريسة باذنجان مشوي مع طحينة", mood: "مقبلات باردة" }
-            },
-            {
-                id: 3, category: "entrantes", price: "8,5€",
-                image: "https://www.lacaravanabarcelona.com/img-trans/productos/24050/fotos/1024-673762edd49cc-la-caravana.png",
-                es: { name: "Mohamara", desc: "Crema de pimientos rojos picados con zumo de granada y nueces.", mood: "Entrante frío" },
-                ca: { name: "Muhammara", desc: "Crema de pebrots vermells amb suc de magrana i nous.", mood: "Entrant fred" },
-                en: { name: "Muhammara", desc: "Red pepper paste with pomegranate juice and walnuts.", mood: "Cold starter" },
-                ar: { name: "محمرة", desc: "معجون فلفل أحمر مع دبس رمان وجوز", mood: "مقبلات باردة" }
-            },
-            {
-                id: 4, category: "entrantes", price: "7,9€",
-                image: "https://www.lacaravanabarcelona.com/img-trans/productos/24050/fotos/1024-6737640dceefa-la-caravana.png",
-                es: { name: "Tzaziki", desc: "Crema de yogur griego con pepino y menta.", mood: "Entrante frío" },
-                ca: { name: "Tzatziki", desc: "Crema de iogurt grec amb cogombre i menta.", mood: "Entrant fred" },
-                en: { name: "Tzatziki", desc: "Greek yogurt dip with cucumber and mint.", mood: "Cold starter" },
-                ar: { name: "تزاتزيكي", desc: "صلصة زبادي يوناني مع خيار ونعناع", mood: "مقبلات باردة" }
-            },
-            // ... I will continue the same pattern for all items, but for brevity I'll show the remaining structure.
-            // In the full code you'll paste, every item includes an "image" property like above.
-            // I'll now provide the rest of the items with image placeholder URLs.
-            // (I'll keep the same placeholder, but you'll replace them later.)
+        // ========== MENU DATA (will be fetched from sheet) ==========
+        let menuData = [];
 
-            // ENSALADAS
-            {
-                id: 10, category: "ensaladas", price: "8,9€",
-                image: "https://www.lacaravanabarcelona.com/img-trans/productos/24050/fotos/1024-673762cf126fa-la-caravana.png",
-                es: { name: "Ensalada de la Casa", desc: "Lechuga, tomate, pepino, salsa de sésamo y menta.", mood: "Fresca" },
-                ca: { name: "Amanida de la Casa", desc: "Enciam, tomàquet, cogombre, salsa de sèsam i menta.", mood: "Fresca" },
-                en: { name: "House Salad", desc: "Lettuce, tomato, cucumber, tahini dressing and mint.", mood: "Fresh" },
-                ar: { name: "سلطة البيت", desc: "خس، طماطم، خيار، صلصة طحينة ونعناع", mood: "طازجة" }
-            },
-            // ... I will include all 66 items with images in the final complete file.
-        ];
+        // ========== CSV PARSER ==========
+        function parseCSV(csvText) {
+            const rows = [];
+            let currentRow = [];
+            let currentField = '';
+            let inQuotes = false;
 
-        // ========== APP LOGIC ==========
+            for (let i = 0; i < csvText.length; i++) {
+                const char = csvText[i];
+                if (inQuotes) {
+                    if (char === '"') {
+                        if (i + 1 < csvText.length && csvText[i + 1] === '"') {
+                            currentField += '"';
+                            i++;
+                        } else {
+                            inQuotes = false;
+                        }
+                    } else {
+                        currentField += char;
+                    }
+                } else {
+                    if (char === '"') {
+                        inQuotes = true;
+                    } else if (char === ',') {
+                        currentRow.push(currentField.trim());
+                        currentField = '';
+                    } else if (char === '\n') {
+                        currentRow.push(currentField.trim());
+                        if (currentRow.length > 0 && !(currentRow.length === 1 && currentRow[0] === '')) {
+                            rows.push(currentRow);
+                        }
+                        currentRow = [];
+                        currentField = '';
+                    } else {
+                        currentField += char;
+                    }
+                }
+            }
+            // push last field/row if any
+            if (currentField || currentRow.length) {
+                currentRow.push(currentField.trim());
+                if (currentRow.length > 0 && !(currentRow.length === 1 && currentRow[0] === '')) {
+                    rows.push(currentRow);
+                }
+            }
+            return rows;
+        }
+
+        async function loadMenuData() {
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                if (!response.ok) throw new Error("Network error");
+                const csvText = await response.text();
+                const rows = parseCSV(csvText);
+
+                if (rows.length < 2) {
+                    throw new Error("Sheet appears empty or missing headers.");
+                }
+
+                const headers = rows.shift().map(h => h.trim().toLowerCase());
+
+                // map each row to an object
+                menuData = rows.map(row => {
+                    const obj = {};
+                    headers.forEach((header, i) => {
+                        obj[header] = row[i] !== undefined ? row[i] : "";
+                    });
+                    return {
+                        id: obj.id,
+                        category: obj.category,
+                        price: obj.price,
+                        image: obj.image,
+                        es: { name: obj.name_es, desc: obj.desc_es, mood: obj.mood_es },
+                        ca: { name: obj.name_ca, desc: obj.desc_ca, mood: obj.mood_ca },
+                        en: { name: obj.name_en, desc: obj.desc_en, mood: obj.mood_en },
+                        ar: { name: obj.name_ar, desc: obj.desc_ar, mood: obj.mood_ar }
+                    };
+                });
+
+                renderCategoryButtons();
+                renderMenu('all');
+            } catch (error) {
+                console.error("Failed to load menu data:", error);
+                document.getElementById('menu-list').innerHTML =
+                    '<p style="text-align:center; color:#b3a28f; margin-top:40px;">Menu temporarily unavailable. Please try again shortly.</p>';
+            }
+        }
+
+        // ========== RENDERING FUNCTIONS ==========
         let currentLang = 'es';
 
         function renderMenu(filter = 'all') {
@@ -497,13 +534,14 @@
 
             filtered.forEach(item => {
                 const t = item[currentLang] || item['es'];
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'menu-item';
+                const div = document.createElement('div');
+                div.className = 'menu-item';
 
-                // Add image if exists
-                const imgHTML = item.image ? `<img src="${item.image}" class="item-img" alt="${t.name}" loading="lazy">` : '';
+                const imgHTML = item.image && item.image.trim() !== ''
+                    ? `<img src="${item.image}" class="item-img" alt="${t.name}" loading="lazy">`
+                    : '';
 
-                itemDiv.innerHTML = `
+                div.innerHTML = `
                     ${imgHTML}
                     <div class="item-content">
                         <div class="flex-row">
@@ -514,7 +552,7 @@
                         <span class="mood">${t.mood}</span>
                     </div>
                 `;
-                menuList.appendChild(itemDiv);
+                menuList.appendChild(div);
             });
         }
 
@@ -574,6 +612,7 @@
             renderMenu('all');
         }
 
+        // Language buttons
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.addEventListener('click', function () {
                 document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
@@ -582,43 +621,9 @@
             });
         });
 
-        // Initial render
+        // Init
         updateStaticText();
-        renderCategoryButtons();
-        renderMenu('all');
-
-
-
-
-
-
-
-
-
-        // --- Google Review Pop-up Logic ---
-        document.addEventListener('DOMContentLoaded', function () {
-            const reviewBtn = document.getElementById('review-popup-btn');
-
-            if (reviewBtn) {
-                reviewBtn.addEventListener('click', function () {
-                    // Replace 'YOUR_GOOGLE_PLACE_ID' with your actual Place ID
-                    const placeId = '0x12a4a296437d3ed3:0x8cbf10ceb3cbcd49';
-                    const reviewUrl = `https://search.google.com/local/writereview?placeid=${placeId}`;
-
-                    // Calculate position to center the popup
-                    const width = 600;
-                    const height = 500;
-                    const left = (window.screen.width - width) / 2;
-                    const top = (window.screen.height - height) / 2;
-
-                    window.open(
-                        reviewUrl,
-                        'google-review-popup',
-                        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
-                    );
-                });
-            }
-        });
+        loadMenuData();   // fetches CSV and then renders
     </script>
 </body>
 

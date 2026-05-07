@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" dir="ltr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,12 +37,15 @@
         html[dir="rtl"] {
             direction: rtl;
         }
+
         html[dir="rtl"] .category-nav {
             direction: rtl;
         }
+
         html[dir="rtl"] .flex-row {
             flex-direction: row-reverse;
         }
+
         html[dir="rtl"] .description,
         html[dir="rtl"] .mood {
             text-align: right;
@@ -58,8 +62,9 @@
             border-radius: 30px;
             padding: 6px 6px;
             border: 1px solid var(--border);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
+
         html[dir="rtl"] .lang-switcher {
             left: 20px;
             right: auto;
@@ -77,10 +82,12 @@
             transition: all 0.2s;
             font-family: 'Montserrat', sans-serif;
         }
+
         .lang-btn.active {
             background: var(--primary);
             color: white;
         }
+
         .lang-btn.arabic {
             font-family: 'Amiri', serif;
             font-size: 0.9rem;
@@ -114,7 +121,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(8px);
             display: flex;
             overflow-x: auto;
@@ -163,7 +170,7 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
             animation: fadeIn 0.3s ease forwards;
         }
 
@@ -171,16 +178,68 @@
         .item-img {
             width: 100%;
             height: auto;
-            aspect-ratio: 4 / 3;  /* nice food-photo proportion */
+            aspect-ratio: 4 / 3;
+            /* nice food-photo proportion */
             object-fit: cover;
             border-bottom: 1px solid var(--border);
             display: block;
-            background: var(--accent-bg); /* fallback while loading */
+            background: var(--accent-bg);
+            /* fallback while loading */
         }
 
+
+
+        /* --- Pop-up Review Button Styles --- */
+        .review-popup-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 25px auto;
+            box-shadow: 0 4px 15px rgba(114, 62, 3, 0.3);
+            width: fit-content;
+        }
+
+        .review-popup-btn:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(114, 62, 3, 0.4);
+        }
+
+        .star-icon {
+            font-size: 1.3rem;
+        }
+
+        /* RTL Support */
+        html[dir="rtl"] .review-popup-btn {
+            flex-direction: row-reverse;
+        }
+
+
+
+
+
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .item-content {
@@ -243,13 +302,20 @@
             header h1 {
                 font-size: 2.4rem;
             }
+
             .item-name {
                 font-size: 1.15rem;
             }
         }
     </style>
 </head>
+
 <body>
+
+    <!-- Review Pop-up Button -->
+    <button id="review-popup-btn" class="review-popup-btn">
+        <span class="star-icon">⭐</span> Review Us Instantly
+    </button>
 
     <div class="lang-switcher" id="lang-switcher">
         <button class="lang-btn active" data-lang="es">ES</button>
@@ -402,7 +468,7 @@
             // In the full code you'll paste, every item includes an "image" property like above.
             // I'll now provide the rest of the items with image placeholder URLs.
             // (I'll keep the same placeholder, but you'll replace them later.)
-            
+
             // ENSALADAS
             {
                 id: 10, category: "ensaladas", price: "8,9€",
@@ -433,10 +499,10 @@
                 const t = item[currentLang] || item['es'];
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'menu-item';
-                
+
                 // Add image if exists
                 const imgHTML = item.image ? `<img src="${item.image}" class="item-img" alt="${t.name}" loading="lazy">` : '';
-                
+
                 itemDiv.innerHTML = `
                     ${imgHTML}
                     <div class="item-content">
@@ -509,7 +575,7 @@
         }
 
         document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 switchLanguage(this.dataset.lang);
@@ -520,6 +586,40 @@
         updateStaticText();
         renderCategoryButtons();
         renderMenu('all');
+
+
+
+
+
+
+
+
+
+        // --- Google Review Pop-up Logic ---
+        document.addEventListener('DOMContentLoaded', function () {
+            const reviewBtn = document.getElementById('review-popup-btn');
+
+            if (reviewBtn) {
+                reviewBtn.addEventListener('click', function () {
+                    // Replace 'YOUR_GOOGLE_PLACE_ID' with your actual Place ID
+                    const placeId = 'YOUR_GOOGLE_PLACE_ID';
+                    const reviewUrl = `https://search.google.com/local/writereview?placeid=${placeId}`;
+
+                    // Calculate position to center the popup
+                    const width = 600;
+                    const height = 500;
+                    const left = (window.screen.width - width) / 2;
+                    const top = (window.screen.height - height) / 2;
+
+                    window.open(
+                        reviewUrl,
+                        'google-review-popup',
+                        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
+                    );
+                });
+            }
+        });
     </script>
 </body>
+
 </html>
